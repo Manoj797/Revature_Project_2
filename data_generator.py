@@ -27,7 +27,7 @@ product_data = {
     "Sports": ["Football", "Tennis Racket", "Cricket Bat", "Basketball", "Gym Gloves"]
 }
 
-# Functions to generate data
+# DataGenerator class to handle data creation
 class DataGenerator:
     @staticmethod
     def gen_order_id():
@@ -89,6 +89,7 @@ class DataGenerator:
     def gen_payment_failure_reason():
         return random.choice(failure_reasons)
 
+# Generate a single record
 def generate_record():
     country, city = DataGenerator.gen_country_and_city()
     category, product_name = DataGenerator.gen_category_and_product_name()
@@ -100,9 +101,9 @@ def generate_record():
         "Product_Id": DataGenerator.gen_product_id(),
         "Product_Category": category,
         "Product_Name": product_name,
-        "Payment_Type":  DataGenerator.gen_payment_type(),
+        "Payment_Type": DataGenerator.gen_payment_type(),
         "Quantity_ordered": DataGenerator.gen_quantity_ordered(),
-        "Price": DataGenerator.gen_price(),  
+        "Price": DataGenerator.gen_price(),
         "Date_and_Time_When_Order_Was_Placed": DataGenerator.gen_date_and_time_when_order_was_placed(),
         "Customer_Country": country,
         "Customer_City": city,
@@ -112,10 +113,13 @@ def generate_record():
         "Payment_Failure_Reason": DataGenerator.gen_payment_failure_reason() if payment_success == 'N' else "Payment Successful"
     }
 
-def write_to_csv(file_name, num_records):
+# Write data to CSV for only selected columns
+def write_to_csv(file_name, num_records, selected_columns):
     with open(file_name, mode='w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=generate_record().keys())
+        writer = csv.DictWriter(file, fieldnames=selected_columns)
         writer.writeheader()
         for _ in range(num_records):
-            writer.writerow(generate_record())
+            record = generate_record()
+            filtered_record = {k: v for k, v in record.items() if k in selected_columns}
+            writer.writerow(filtered_record)
 
